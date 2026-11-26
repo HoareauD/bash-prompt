@@ -32,14 +32,18 @@ Cette méthode fonctionne aussi sur Fedora Atomic.
 Si une dépendance manque sur Fedora classique, installe-la puis relance le script.
 
 ```bash
-sudo dnf install curl tar xz fontconfig
+sudo dnf install curl unzip fontconfig
 ```
 
-Le script ne contient aucune police. Il télécharge l’archive officielle Nerd
-Fonts v3.5.1, vérifie son empreinte SHA-256 et installe les variantes Mono
-sous `${XDG_DATA_HOME:-$HOME/.local/share}/fonts`. Il réutilise la famille si
-elle est déjà visible pour Fontconfig. Pour passer l’étape police,
-utilise `bash install.sh --no-font`.
+Le script télécharge et vérifie le ZIP officiel JetBrainsMono v3.5.1, puis
+extrait la famille complète sous `${XDG_DATA_HOME:-$HOME/.local/share}/fonts`.
+Pour passer cette étape, utilise `bash install.sh --no-font`.
+
+Si Konsole et les outils KDE 6 sont disponibles, un profil Bluefin est créé
+avec **JetBrainsMono Nerd Font**, taille 12. Cette variante a des icônes plus
+grandes. Si eza et Python 3 sont présents et qu’il n’existe aucun thème eza,
+le script harmonise les symboles Bash et ceux des dossiers visibles du
+dossier personnel au moment de l’installation.
 
 Le thème est copié dans
 `${XDG_CONFIG_HOME:-$HOME/.config}/bash-prompt-bluefin/starship.toml`.
@@ -51,15 +55,14 @@ restent à leur emplacement.
 
 ## Vérifier dans Konsole
 
-Dans les paramètres du profil Konsole, règle la police sur
-**JetBrainsMono Nerd Font Mono**, puis ouvre un nouveau terminal Bash.
-Le script installe la police au niveau du compte. Le choix de police se fait
-dans chaque profil de terminal.
+Ferme et rouvre Konsole pour utiliser le profil **Bluefin**. Pour un autre
+terminal, sélectionne **JetBrainsMono Nerd Font**, taille 12, dans ses
+préférences.
 
 ```bash
 starship --version
 printf '%s\n' "$STARSHIP_CONFIG"
-fc-list --format '%{family}\n' | cut -d, -f1 | sort -u | grep -Fx 'JetBrainsMono Nerd Font Mono'
+fc-list --format '%{family}\n' | cut -d, -f1 | sort -u | grep -Fx 'JetBrainsMono Nerd Font'
 printf '%s\n' '        ❯'
 false
 ```
@@ -82,8 +85,9 @@ bash uninstall.sh
 ```
 
 Ferme le terminal qui utilisait Bluefin et ouvre une nouvelle fenêtre depuis
-le menu des applications. Le script retire sa ligne de `~/.bashrc` et conserve
-la police, Starship et ta copie locale du thème.
+le menu des applications. Le script retire sa ligne de `~/.bashrc`, rétablit
+le profil Konsole précédent et déplace les éléments qu’il a installés vers
+le dossier de sauvegarde Bluefin.
 
 ## Sources officielles
 
