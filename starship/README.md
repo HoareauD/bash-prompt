@@ -6,7 +6,7 @@ l’état Git, la version de Python et la durée des commandes apparaissent selo
 le contexte.
 
 ```text
-╭─  support@fedora  ~/Documents  main  18:16
+╭─  utilisateur@machine  ~/Documents  main  18:16
 ╰─ ❯
 ```
 
