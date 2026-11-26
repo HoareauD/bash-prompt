@@ -12,11 +12,17 @@ le contexte.
 
 ## Installer sur la Surface Pro sous Fedora
 
-Depuis la racine du dépôt, dans un terminal Bash, avec ton compte utilisateur.
+Dans un terminal Bash, avec ton compte utilisateur, clone le dépôt public
+puis lance le script d’installation.
 
 ```bash
+git clone https://github.com/HoareauD/bash-prompt.git
+cd bash-prompt
 bash starship/install.sh
 ```
+
+Si tu as déjà cloné le dépôt, ouvre un terminal à sa racine et lance
+`bash starship/install.sh`.
 
 Si Starship est déjà présent, le script le réutilise. Sur Fedora classique, il
 utilise `sudo dnf install starship` au besoin. Si une commande pour installer
