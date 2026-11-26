@@ -1,0 +1,70 @@
+# Thème inspiré de Bluefin
+"$schema" = "https://starship.rs/config-schema.json"
+add_newline = true
+command_timeout = 1000
+
+format = """
+[╭─ ](bold blue)$os$username$hostname$directory$git_branch$git_status$python$cmd_duration$time
+[╰─ ](bold blue)$character"""
+
+[os]
+disabled = false
+style = "bold blue"
+
+[os.symbols]
+Fedora = " "
+Debian = " "
+Ubuntu = " "
+Arch = " "
+Windows = " "
+Macos = " "
+Linux = " "
+
+[username]
+show_always = true
+style_user = "bold blue"
+style_root = "bold red"
+format = "[$user]($style)"
+
+[hostname]
+ssh_only = false
+style = "bold cyan"
+format = "[$ssh_symbol@$hostname]($style) "
+ssh_symbol = "󰣀 "
+
+[directory]
+style = "bold cyan"
+format = "[ $path]($style)[$read_only](red) "
+truncation_length = 4
+truncate_to_repo = false
+home_symbol = "~"
+read_only = " "
+
+[git_branch]
+symbol = " "
+style = "bold green"
+format = "[$symbol$branch]($style) "
+
+[git_status]
+style = "bold yellow"
+format = "([$all_status$ahead_behind]($style) )"
+
+[python]
+symbol = " "
+style = "yellow"
+format = "[$symbol$version]($style) "
+
+[cmd_duration]
+min_time = 1000
+style = "yellow"
+format = "[󱎫 $duration]($style) "
+
+[time]
+disabled = false
+time_format = "%H:%M"
+style = "bright-black"
+format = "[ $time]($style)"
+
+[character]
+success_symbol = "[❯](bold green)"
+error_symbol = "[❯](bold red)"
