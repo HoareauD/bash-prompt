@@ -18,11 +18,11 @@ puis lance le script d’installation.
 ```bash
 git clone https://github.com/HoareauD/bash-prompt.git
 cd bash-prompt
-bash starship/install.sh
+bash install.sh
 ```
 
 Si tu as déjà cloné le dépôt, ouvre un terminal à sa racine et lance
-`bash starship/install.sh`.
+`bash install.sh`.
 
 Si Starship est déjà présent, le script le réutilise. Sur Fedora classique, il
 utilise `sudo dnf install starship` au besoin. Si une commande pour installer
@@ -41,7 +41,7 @@ Le script ne contient aucune police. Il télécharge l’archive officielle Nerd
 Fonts v3.5.1, vérifie son empreinte SHA-256 et installe les variantes Mono
 sous `${XDG_DATA_HOME:-$HOME/.local/share}/fonts`. Il réutilise la famille si
 elle est déjà visible pour Fontconfig. Pour passer l’étape police,
-utilise `bash starship/install.sh --no-font`.
+utilise `bash install.sh --no-font`.
 
 Le thème est copié dans
 `${XDG_CONFIG_HOME:-$HOME/.config}/bash-prompt-bluefin/starship.toml`.
@@ -74,13 +74,13 @@ Pour afficher uniquement un aperçu, sans activer le thème dans Bash, lance
 cette commande depuis la racine du dépôt où Starship est déjà disponible.
 
 ```bash
-STARSHIP_CONFIG="$PWD/starship/starship.toml" starship prompt
+STARSHIP_CONFIG="$PWD/starship.toml" starship prompt
 ```
 
 ## Revenir au prompt précédent
 
 ```bash
-bash starship/uninstall.sh
+bash uninstall.sh
 ```
 
 Ferme le terminal qui utilisait Bluefin et ouvre une nouvelle fenêtre depuis
