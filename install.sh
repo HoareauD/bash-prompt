@@ -16,7 +16,8 @@ esac
 source_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 theme_dir="${XDG_CONFIG_HOME:-$HOME/.config}/bash-prompt-bluefin"
 theme="$theme_dir/starship.toml"
-hook='if [[ $- == *i* ]] && command -v starship >/dev/null && [[ -r "${XDG_CONFIG_HOME:-$HOME/.config}/bash-prompt-bluefin/starship.toml" ]]; then export STARSHIP_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/bash-prompt-bluefin/starship.toml"; declare -F starship_precmd >/dev/null || eval "$(starship init bash)"; fi # bash-prompt-bluefin'
+old_hook='if [[ $- == *i* ]] && command -v starship >/dev/null && [[ -r "${XDG_CONFIG_HOME:-$HOME/.config}/bash-prompt-bluefin/starship.toml" ]]; then export STARSHIP_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/bash-prompt-bluefin/starship.toml"; declare -F starship_precmd >/dev/null || eval "$(starship init bash)"; fi # bash-prompt-bluefin'
+hook='if [[ $- == *i* && -x "$HOME/.local/bin/starship" ]] && ! command -v starship >/dev/null; then export PATH="$HOME/.local/bin:$PATH"; fi; if [[ $- == *i* ]] && command -v starship >/dev/null && [[ -r "${XDG_CONFIG_HOME:-$HOME/.config}/bash-prompt-bluefin/starship.toml" ]]; then export STARSHIP_CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/bash-prompt-bluefin/starship.toml"; declare -F starship_precmd >/dev/null || eval "$(starship init bash)"; fi # bash-prompt-bluefin'
 
 # Verrou commun, même si plusieurs installations sont lancées.
 state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/bash-prompt-bluefin"
@@ -36,16 +37,18 @@ fi
 rc_tmp=
 theme_tmp=
 font_tmp=
-trap '[[ -z "$rc_tmp" ]] || rm -f -- "$rc_tmp"; [[ -z "$theme_tmp" ]] || rm -f -- "$theme_tmp"; [[ -z "$font_tmp" ]] || rm -rf -- "$font_tmp"' EXIT
+installer_tmp=
+trap '[[ -z "$rc_tmp" ]] || rm -f -- "$rc_tmp"; [[ -z "$theme_tmp" ]] || rm -f -- "$theme_tmp"; [[ -z "$font_tmp" ]] || rm -rf -- "$font_tmp"; [[ -z "$installer_tmp" ]] || rm -f -- "$installer_tmp"' EXIT
 
 edit_bashrc() {
     rc_tmp=$(mktemp -- "${rc}.bluefin.XXXXXX")
     if [[ -f "$rc" ]]; then
         cp -p -- "$rc" "$rc_tmp"
     fi
-    if [[ "$mode" == --uninstall ]]; then
-        awk -v hook="$hook" '$0 != hook' "$rc" > "$rc_tmp"
-    else
+    if [[ -f "$rc" ]] && grep -Fxq -e "$hook" -e "$old_hook" -- "$rc"; then
+        awk -v hook="$hook" -v old_hook="$old_hook" '$0 != hook && $0 != old_hook' "$rc" > "$rc_tmp"
+    fi
+    if [[ "$mode" != --uninstall ]]; then
         # Si le dernier octet n’est pas un saut de ligne, séparer la ligne ajoutée.
         if [[ -s "$rc_tmp" && -n "$(tail -c 1 -- "$rc_tmp")" ]]; then
             printf '\n' >> "$rc_tmp"
@@ -61,7 +64,7 @@ edit_bashrc() {
 }
 
 if [[ "$mode" == --uninstall ]]; then
-    if [[ -f "$rc" ]] && grep -Fxq -- "$hook" "$rc"; then
+    if [[ -f "$rc" ]] && grep -Fxq -e "$hook" -e "$old_hook" -- "$rc"; then
         edit_bashrc
     fi
     printf '%s\n' 'Bluefin est désactivé. Ouvre un nouveau terminal.'
@@ -70,11 +73,18 @@ fi
 
 [[ -r "$source_dir/starship.toml" ]] || die "starship.toml est introuvable à côté du script."
 if ! command -v starship >/dev/null; then
-    if [[ -e /run/ostree-booted ]]; then
-        die "Sur Fedora Atomic, lance sudo rpm-ostree install starship, redémarre, puis relance ce script."
+    bin_dir="$HOME/.local/bin"
+    if [[ ! -x "$bin_dir/starship" ]]; then
+        command -v curl >/dev/null || die "Installe curl, puis relance ce script."
+        mkdir -p -- "$bin_dir"
+        [[ -w "$bin_dir" ]] || die "Impossible d’écrire dans $bin_dir."
+        installer_tmp=$(mktemp)
+        curl --fail --silent --show-error --location --retry 3 \
+            --proto '=https' --proto-redir '=https' \
+            https://starship.rs/install.sh -o "$installer_tmp"
+        sh "$installer_tmp" --yes --bin-dir "$bin_dir"
     fi
-    command -v dnf >/dev/null || die "Installe Starship depuis https://starship.rs/guide/ puis relance ce script."
-    sudo dnf install starship
+    export PATH="$bin_dir:$PATH"
 fi
 starship --version
 

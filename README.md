@@ -24,18 +24,16 @@ bash install.sh
 Si tu as déjà cloné le dépôt, ouvre un terminal à sa racine et lance
 `bash install.sh`.
 
-Si Starship est déjà présent, le script le réutilise. Sur Fedora classique, il
-utilise `sudo dnf install starship` au besoin. Si une commande pour installer
-la police manque, installe ses dépendances et relance le script.
+Si Starship est déjà présent, le script le réutilise. Sinon, il utilise
+[l’installateur officiel de Starship](https://starship.rs/guide/) pour placer
+le binaire dans `~/.local/bin`, sans sudo et sans ajouter de dépôt DNF.
+Cette méthode fonctionne aussi sur Fedora Atomic.
+
+Si une dépendance manque sur Fedora classique, installe-la puis relance le script.
 
 ```bash
 sudo dnf install curl tar xz fontconfig
 ```
-
-Sur Fedora Atomic, si Starship manque, utilise `sudo rpm-ostree install starship`,
-redémarre et relance le script. Sur un autre système ayant déjà Starship, le
-script peut configurer le thème dans Bash si les commandes nécessaires sont
-disponibles.
 
 Le script ne contient aucune police. Il télécharge l’archive officielle Nerd
 Fonts v3.5.1, vérifie son empreinte SHA-256 et installe les variantes Mono
